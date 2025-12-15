@@ -296,7 +296,7 @@
         </div>
     </div>
 
-    <audio id="christmasMusic" loop>
+    <audio id="christmasMusic" loop preload="auto">
         <source src="Christmas Songs - We Wish You A Merry Christmas.mp3" type="audio/mpeg">
     </audio>
 
@@ -326,10 +326,26 @@
         welcomePage.addEventListener('click', function() {
             welcomePage.classList.add('hidden');
             christmasPage.classList.add('active');
-            music.play().catch(e => console.log('Audio playback blocked:', e));
+            
+            // Try to play music with multiple attempts
+            music.volume = 0.7;
+            music.play().then(() => {
+                console.log('Music started playing successfully!');
+            }).catch(e => {
+                console.log('First attempt failed, trying again...', e);
+                // Second attempt after a small delay
+                setTimeout(() => {
+                    music.play().catch(err => console.log('Music playback blocked:', err));
+                }, 100);
+            });
             
             // Create snowflakes for Christmas page
             createSnowflakes(document.body, 80);
+        });
+
+        // Load music on page load
+        window.addEventListener('load', function() {
+            music.load();
         });
     </script>
 </body>
